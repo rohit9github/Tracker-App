@@ -23,6 +23,9 @@ app.get('/',(req,res)=>{
     res.send('<h1>hello</h1>')
 })
 
+app.use('/api/v1/users',require('./routes/userRoute'))
+app.use('/api/v1/transection',require('./routes/transectionRoute'))
+
 //port
 const PORT = 8080 || process.env.PORT
 
