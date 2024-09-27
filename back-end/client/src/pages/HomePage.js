@@ -1,12 +1,49 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import Layout from '../components/layout/Layout'
-import {Form, Input, message, Modal, Select} from "antd"
+import {Form, Input, message, Modal, Select, Table,DatePicker} from "antd"
 import axios from 'axios'
+import moment from 'moment';
+const { RangePicker } = DatePicker;
 
 function HomePage() {
 
 
-    const [showModal,setShowModal] = useState(false)
+    const [showModal,setShowModal] = useState(false);
+    const[allTransection,setAllTransection] = useState([]);
+    const [frequency,setFrequency] = useState('7');
+    const[seletedDate,setSelectedDate] = useState([])
+
+
+    const columns = [
+        {
+            title:'date',
+            dataIndex:'date',
+            render:(text)=><span>{moment(text).format("yyyy-mm-dd")}</span>
+        },
+        {
+            title:'Amount',
+            dataIndex:'amount'
+        },
+        {
+            title:'type',
+            dataIndex:'type'
+        },
+        {
+            title:'Category',
+            dataIndex:'category'
+        },
+        {
+            title:'Reference',
+            dataIndex:'reference'
+        },
+        {
+            title:'Actions',
+        }
+    ]
+
+    useEffect(()=>{
+        getAllTransection()
+    },[frequency,seletedDate])
 
     const handleSubmit =async (values)=>{
         try {
@@ -19,13 +56,42 @@ function HomePage() {
         
     }
 
+    const getAllTransection =async ()=>{
+        try {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const res = await axios.post("/transection/get-transection",{
+                userId:user._id,
+                frequency,
+                seletedDate
+            })
+            setAllTransection(res.data);
+            console.log(res.data);
+            
+        } catch (error) {
+            console.log(error);
+            message.error("faild fecth transection")
+        }
+    }
+
   return (
     <Layout>
         <div className='filters'>
-            <div>Range Filter</div>
+            <div>
+                <h6>Select frequency</h6>
+                <Select value={frequency} onChange={(values)=>setFrequency(values)} >
+                    <Select.Option value="7">Last 1 Week</Select.Option>
+                    <Select.Option value="30">Last 1 Monnth</Select.Option>
+                    <Select.Option value="365 ">Last 1 year</Select.Option>
+                    <Select.Option value="Custom">Custom</Select.Option>
+                </Select>
+                {frequency === "custom" &&(<RangePicker value={seletedDate} onChange={(values)=>setSelectedDate(values)}/>)}
+            </div>
             <div>
                 <button className='btn btn-primary' onClick={()=>setShowModal(true)}>Add New</button>
             </div>
+        </div>
+        <div>
+            <Table columns={columns} dataSource={allTransection}/>
         </div>
             <Modal title="add Transection" visible={showModal} onCancel={()=>setShowModal(false)} footer={false}>
                 <Form layout='vertical' onFinish={handleSubmit}>
