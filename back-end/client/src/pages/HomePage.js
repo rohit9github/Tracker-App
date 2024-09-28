@@ -3,7 +3,10 @@ import Layout from '../components/layout/Layout'
 import {Form, Input, message, Modal, Select, Table,DatePicker} from "antd"
 import axios from 'axios'
 import moment from 'moment';
+import {AreaChartOutlined, UnorderedListOutlined,} from"@ant-design/icons"
+import Analytics from '../components/Analytics';
 const { RangePicker } = DatePicker;
+
 
 function HomePage() {
 
@@ -12,7 +15,8 @@ function HomePage() {
     const[allTransection,setAllTransection] = useState([]);
     const [frequency,setFrequency] = useState('7');
     const[seletedDate,setSelectedDate] = useState([]);
-    const [type,setType] = useState("all")
+    const [type,setType] = useState("all");
+    const [viewData,setViewData] =  useState("table")
 
 
     const columns = [
@@ -96,12 +100,18 @@ function HomePage() {
                     <Select.Option value="expanse ">Expanse</Select.Option>
                 </Select>
             </div>
+            <div className='mx-2'>
+                <UnorderedListOutlined className={`mx-2 ${viewData === "table"?"active-icon":"inactive-icon"}`} onClick={()=>setViewData("table")}/>
+                <AreaChartOutlined className={`mx-2 ${viewData === "analytics"?"active-icon":"inactive-icon"}`}  onClick={()=>setViewData("analytics")}/>
+            </div>
             <div>
                 <button className='btn btn-primary' onClick={()=>setShowModal(true)}>Add New</button>
             </div>
         </div>
         <div>
-            <Table columns={columns} dataSource={allTransection}/>
+            {viewData === "table" ? <Table columns={columns} dataSource={allTransection}/>:
+            <Analytics allTransection={allTransection}/> }
+            
         </div>
             <Modal title="add Transection" visible={showModal} onCancel={()=>setShowModal(false)} footer={false}>
                 <Form layout='vertical' onFinish={handleSubmit}>

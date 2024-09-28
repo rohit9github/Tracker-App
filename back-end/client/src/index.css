@@ -19,3 +19,22 @@
   justify-content: space-between;
   padding: 15px 20px;
 }
+
+.switch-icon{
+  border: 1px solid rgba(0, 0, 0, 0.769);
+  border-radius: 5px;
+  padding: 10px 15px;
+}
+
+.anticons svg{
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.active-icon{
+  color: black;
+}
+
+.inactive-icon{
+  color: gray;
+}
