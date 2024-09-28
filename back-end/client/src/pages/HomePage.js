@@ -11,14 +11,15 @@ function HomePage() {
     const [showModal,setShowModal] = useState(false);
     const[allTransection,setAllTransection] = useState([]);
     const [frequency,setFrequency] = useState('7');
-    const[seletedDate,setSelectedDate] = useState([])
+    const[seletedDate,setSelectedDate] = useState([]);
+    const [type,setType] = useState("all")
 
 
     const columns = [
         {
             title:'date',
             dataIndex:'date',
-            render:(text)=><span>{moment(text).format("yyyy-mm-dd")}</span>
+            render:(text)=><span>{moment(text).format("YYYY-MM-DD")}</span>
         },
         {
             title:'Amount',
@@ -34,7 +35,7 @@ function HomePage() {
         },
         {
             title:'Reference',
-            dataIndex:'reference'
+            dataIndex:'refrence'
         },
         {
             title:'Actions',
@@ -43,7 +44,7 @@ function HomePage() {
 
     useEffect(()=>{
         getAllTransection()
-    },[frequency,seletedDate])
+    },[frequency,seletedDate,type])
 
     const handleSubmit =async (values)=>{
         try {
@@ -62,7 +63,8 @@ function HomePage() {
             const res = await axios.post("/transection/get-transection",{
                 userId:user._id,
                 frequency,
-                seletedDate
+                seletedDate,
+                type
             })
             setAllTransection(res.data);
             console.log(res.data);
@@ -82,9 +84,17 @@ function HomePage() {
                     <Select.Option value="7">Last 1 Week</Select.Option>
                     <Select.Option value="30">Last 1 Monnth</Select.Option>
                     <Select.Option value="365 ">Last 1 year</Select.Option>
-                    <Select.Option value="Custom">Custom</Select.Option>
+                    <Select.Option value="custom">Custom</Select.Option>
                 </Select>
                 {frequency === "custom" &&(<RangePicker value={seletedDate} onChange={(values)=>setSelectedDate(values)}/>)}
+            </div>
+            <div>
+                <h6>Select Type</h6>
+                <Select value={type} onChange={(values)=>setType(values)} >
+                    <Select.Option value="all">All</Select.Option>
+                    <Select.Option value="income">Income</Select.Option>
+                    <Select.Option value="expanse ">Expanse</Select.Option>
+                </Select>
             </div>
             <div>
                 <button className='btn btn-primary' onClick={()=>setShowModal(true)}>Add New</button>
@@ -119,7 +129,7 @@ function HomePage() {
                     <Form.Item label="date" name={"date"}>
                         <Input type='date'/>
                     </Form.Item>
-                    <Form.Item label="reference" name={"reference"}>
+                    <Form.Item label="refrence" name={"refrence"}>
                         <Input type='text'/>
                     </Form.Item>
                     <Form.Item label="description" name={"description"}>
